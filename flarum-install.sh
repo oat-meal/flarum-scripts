@@ -4,7 +4,7 @@
 #This script has been tested on Ubuntu 14.04 x64 systems
 #
 #
-#You should CHANGE the MYSQL root password "LINES 38-39"
+#You should CHANGE the MYSQL root password "LINES 38-39" Same password will be requested "Line 74"
 #
 #
 #chmod +x SCRIPTNAME.sh
@@ -37,7 +37,6 @@ php5enmod mcrypt
 
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password FLARUMMYsqlpassword'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password FLARUMMYsqlpassword'
-
 sudo apt-get -y install mysql-server
 
 #Set FQDN for apache2
@@ -61,16 +60,19 @@ sudo unzip /var/www/flarum/temp.zip -d  /var/www/flarum
 sudo rm -f /var/www/flarum/temp.zip
 
 #Set Permissions
+
 sudo chown -R www-data:www-data /var/www/flarum
 
 #Update apache2 settings
+
 sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/flarum-beta.conf
 sudo ln -s /etc/apache2/sites-available/flarum-beta.conf /etc/apache2/sites-enabled
 sudo rm -f /etc/apache2/sites-enabled/000-default.conf
 sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/flarum|' /etc/apache2/sites-available/flarum-beta.conf
 sudo a2enmod rewrite
 
-#Create DB & User for Flarum - Be sure to record your credentials. Use the MYSQL root password you created above. 
+#Create DB & User for Flarum - Be sure to record your credentials. Use the MYSQL root password you created above.
+
 echo -n "Enter the MySQL root password: "
 read -s rootpw
 echo -n "Enter database name: "
