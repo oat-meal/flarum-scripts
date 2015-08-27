@@ -1,8 +1,11 @@
 #!/bin/bash
 
-#Instructions to use this script 
+#Please read instructions for proper use of this script.
 #This script has been tested on Ubuntu 14.04 x64 systems
-#CHANGE MYSQL root password
+#
+#
+#You should CHANGE the MYSQL root password "LINES 38-39"
+#
 #
 #chmod +x SCRIPTNAME.sh
 #
@@ -10,12 +13,20 @@
 
 
 echo "###################################################################################"
-echo "Please be Patient: Installation will some time "
+echo "Please be Patient: Installation will some time."
 echo "###################################################################################"
 
-#Update the repositories
+sleep 2
+
+#Update & Upgrade the repositories
 
 sudo apt-get update && apt-get upgrade
+
+sleep 2
+
+install unzip
+
+sudo apt-get install unzip
 
 #Apache, Php, MySQL and required packages installation
 
@@ -29,6 +40,36 @@ sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again p
 
 sudo apt-get -y install mysql-server
 
+#Set FQDN for apache2
+
+echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/fqdn.conf
+sudo a2enconf fqdn
+
+#Make Directories
+
+echo "Creating Directory for Flarum"
+sleep 2
+sudo mkdir /var/www/flarum
+
+
+#Download and extract Flarum - URL MAY NEED TO BE UPDATED
+
+echo "Downloading & extracting Flarum"
+sleep 2
+sudo wget --output-document="/var/www/flarum/temp.zip" https://github.com/flarum/flarum/releases/download/v0.1.0-beta/flarum-0.1.0-beta.zip
+sudo unzip /var/www/flarum/temp.zip -d  /var/www/flarum
+sudo rm -f /var/www/flarum/temp.zip
+
+#Set Permissions
+sudo chown -R www-data:www-data /var/www/flarum
+
+#Update apache2 settings
+sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/flarum-beta.conf
+sudo ln -s /etc/apache2/sites-available/flarum-beta.conf /etc/apache2/sites-enabled
+sudo rm -f /etc/apache2/sites-enabled/000-default.conf
+sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/flarum|' /etc/apache2/sites-available/flarum-beta.conf
+sudo a2enmod rewrite
+
 #Restart all the installed services to verify that everything is installed properly
 
 echo -e "\n"
@@ -38,9 +79,7 @@ service apache2 restart && service mysql restart > /dev/null
 echo -e "\n"
 
 if [ $? -ne 0 ]; then
-   echo "Please Check the Install Services, There is some $(tput bold)$(tput setaf 1)Problem$(tput sgr0)
+   echo "Please Check the Installed Services, There are some $(tput bold)$(tput setaf 1)Problems$(tput sgr0)"
 else
    echo "Installed Services run $(tput bold)$(tput setaf 2)Sucessfully$(tput sgr0)"
 fi
-
-echo -e "\n"
