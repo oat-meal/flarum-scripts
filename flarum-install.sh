@@ -70,6 +70,35 @@ sudo rm -f /etc/apache2/sites-enabled/000-default.conf
 sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/flarum|' /etc/apache2/sites-available/flarum-beta.conf
 sudo a2enmod rewrite
 
+#Create DB & User for Flarum - Be sure to record your credentials. Use the MYSQL root password you created above. 
+echo -n "Enter the MySQL root password: "
+read -s rootpw
+echo -n "Enter database name: "
+read dbname
+echo -n "Enter database username: "
+read dbuser
+echo -n "Enter database user password: "
+read dbpw
+ 
+db="create database $dbname;GRANT ALL PRIVILEGES ON $dbname.* TO $dbuser@localhost IDENTIFIED BY '$dbpw';FLUSH PRIVILEGES;"
+mysql -u root -p$rootpw -e "$db"
+ 
+if [ $? != "0" ]; then
+ echo "[Error]: Database creation failed"
+ exit 1
+else
+ echo "------------------------------------------"
+ echo " Database has been created successfully "
+ echo "------------------------------------------"
+ echo " DB Info: "
+ echo ""
+ echo " DB Name: $dbname"
+ echo " DB User: $dbuser"
+ echo " DB Pass: $dbpw"
+ echo ""
+ echo "------------------------------------------"
+fi
+
 #Restart all the installed services to verify that everything is installed properly
 
 echo -e "\n"
