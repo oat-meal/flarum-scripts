@@ -1,23 +1,46 @@
 #!/bin/bash
 
-clear
-
-echo "Starting Script"
-sleep 2
-echo "Update && Upgrade"
-sleep 2
-apt-get update && apt-get upgrade -y
-sleep 1
-echo "Installing LAMP & Unzip"
-sleep 2
-echo "MY SQL automation"
-
-## Replace "root_password password your_mysql_root_password" with your password.
-
-echo "mysql-server-5.1 mysql-server/root_password password your_mysql_root_password" | debconf-set-selections
-echo "mysql-server-5.1 mysql-server/root_password_again password your_mysql_root_password" | debconf-set-selections
-
-apt-get install unzip apache2 apache2-utils mysql-server libapache2-mod-auth-mysql php5-mysql php5 php5-mysql php-pear php5-gd  php5-mcrypt php5-curl
+#Instructions to use this script 
+#This script has been tested on Ubuntu 14.04 x64 systems
+#CHANGE MYSQL root password
+#
+#chmod +x SCRIPTNAME.sh
+#
+#sudo ./SCRIPTNAME.sh
 
 
-echo "I hope that worked?"
+echo "###################################################################################"
+echo "Please be Patient: Installation will some time "
+echo "###################################################################################"
+
+#Update the repositories
+
+sudo apt-get update && apt-get upgrade
+
+#Apache, Php, MySQL and required packages installation
+
+sudo apt-get -y install apache2 php5 libapache2-mod-php5 php5-mcrypt php5-curl php5-mysql php5-gd php5-cli php5-dev mysql-client
+php5enmod mcrypt
+
+#The following commands set the MySQL root password to MYPASSWORD123 when you install the mysql-server package.
+
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password MYPASSWORD123'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password MYPASSWORD123'
+
+sudo apt-get -y install mysql-server
+
+#Restart all the installed services to verify that everything is installed properly
+
+echo -e "\n"
+
+service apache2 restart && service mysql restart > /dev/null
+
+echo -e "\n"
+
+if [ $? -ne 0 ]; then
+   echo "Please Check the Install Services, There is some $(tput bold)$(tput setaf 1)Problem$(tput sgr0)
+else
+   echo "Installed Services run $(tput bold)$(tput setaf 2)Sucessfully$(tput sgr0)"
+fi
+
+echo -e "\n"
