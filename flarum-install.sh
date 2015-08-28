@@ -20,7 +20,7 @@ sleep 3
 
 #Update & Upgrade base system and packages.
 
-sudo apt-get -y update && -y apt-get upgrade
+sudo apt-get -y update && apt-get upgrade
 
 #Install Unzip.
 
