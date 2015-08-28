@@ -70,6 +70,9 @@ sudo ln -s /etc/apache2/sites-available/flarum-beta.conf /etc/apache2/sites-enab
 sudo rm -f /etc/apache2/sites-enabled/000-default.conf
 sudo sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/flarum|' /etc/apache2/sites-available/flarum-beta.conf
 sudo a2enmod rewrite
+echo "<Directory "/var/www/flarum">" >> /etc/apache2/sites-enabled/flarum-beta.conf
+echo "AllowOverride All" >> /etc/apache2/sites-enabled/flarum-beta.conf
+echo "</Directory>" >> /etc/apache2/sites-enabled/flarum-beta.conf
 
 #Create DB & User for Flarum - Be sure to record your credentials. Use the MYSQL root password you created above.
 
