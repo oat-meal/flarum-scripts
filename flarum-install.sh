@@ -4,31 +4,29 @@
 #This script has been tested on Ubuntu 14.04 x64 systems
 #
 #
-#You should CHANGE the MYSQL root password "LINES 38-39" Same password will be requested "Line 74"
+#You *should* CHANGE the MYSQL root password "LINES 38-39" This password will be requested "Line 77"
 #
 #
-#chmod +x SCRIPTNAME.sh
+#chmod +x flarum-install.sh
 #
-#sudo ./SCRIPTNAME.sh
+#sudo ./flarum-install.sh
 
 
 echo "###################################################################################"
-echo "Please be Patient: Installation will some time."
+echo "Please be Patient: Installation will some time, hope you read the notes..."
 echo "###################################################################################"
 
-sleep 2
+sleep 3
 
-#Update & Upgrade the repositories
+#Update & Upgrade base system and packages.
 
-sudo apt-get update && apt-get upgrade
+sudo apt-get -y update && -y apt-get upgrade
 
-sleep 2
+#Install Unzip.
 
-install unzip
+sudo apt-get -y install unzip
 
-sudo apt-get install unzip
-
-#Apache, Php, MySQL and required packages installation
+#Apache, Php, MySQL and required packages installation.
 
 sudo apt-get -y install apache2 php5 libapache2-mod-php5 php5-mcrypt php5-curl php5-mysql php5-gd php5-cli php5-dev mysql-client
 php5enmod mcrypt
@@ -39,19 +37,19 @@ sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password passwor
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password FLARUMMYsqlpassword'
 sudo apt-get -y install mysql-server
 
-#Set FQDN for apache2
+#Set FQDN for apache2.
 
 echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/fqdn.conf
 sudo a2enconf fqdn
 
-#Make Directories
+#Make Directories.
 
 echo "Creating Directory for Flarum"
 sleep 2
 sudo mkdir /var/www/flarum
 
 
-#Download and extract Flarum - URL MAY NEED TO BE UPDATED
+#Download and extract Flarum - URL MAY CHANGE WITH NEW RELEASES!
 
 echo "Downloading & extracting Flarum"
 sleep 2
@@ -59,11 +57,11 @@ sudo wget --output-document="/var/www/flarum/temp.zip" https://github.com/flarum
 sudo unzip /var/www/flarum/temp.zip -d  /var/www/flarum
 sudo rm -f /var/www/flarum/temp.zip
 
-#Set Permissions
+#Set Permissions.
 
 sudo chown -R www-data:www-data /var/www/flarum
 
-#Update apache2 settings
+#Update apache2 settings.
 
 sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/flarum-beta.conf
 sudo ln -s /etc/apache2/sites-available/flarum-beta.conf /etc/apache2/sites-enabled
@@ -104,7 +102,7 @@ else
  echo "------------------------------------------"
 fi
 
-#Restart all the installed services to verify that everything is installed properly
+#Restart all the installed services to verify that things are working.
 
 echo -e "\n"
 
