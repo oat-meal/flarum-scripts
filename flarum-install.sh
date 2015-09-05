@@ -29,9 +29,19 @@ sudo apt-get -y install unzip
 sudo apt-get -y install apache2 php5 libapache2-mod-php5 php5-mcrypt php5-curl php5-mysql php5-gd php5-cli php5-dev mysql-client
 php5enmod mcrypt
 
+#Create DB & User for Flarum - Be sure to record your credentials. NOTE: Use the MySQL root password you created above.
+echo -n "MySQL root password: "
+read -s rootpw
+echo -n "Flarum database username: "
+read dbuser
+echo -n "Database user password: "
+read -s dbpw
+echo -n "Database name: "
+read dbname
+
 #The following commands set the MySQL root password to FLARUMMySQLpassword when you install the mysql-server package. NOTE: Change & RECORD this password!
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password FLARUMMySQLpassword'
-sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password FLARUMMySQLpassword'
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $dbpw"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $dbpw"
 sudo apt-get -y install mysql-server
 
 #Set FQDN for apache2.
@@ -58,16 +68,6 @@ sudo a2enmod rewrite
 echo "<Directory "/var/www/flarum">" >> /etc/apache2/sites-enabled/flarum-beta.conf
 echo "AllowOverride All" >> /etc/apache2/sites-enabled/flarum-beta.conf
 echo "</Directory>" >> /etc/apache2/sites-enabled/flarum-beta.conf
-
-#Create DB & User for Flarum - Be sure to record your credentials. NOTE: Use the MySQL root password you created above.
-echo -n "Enter the MySQL root password: "
-read -s rootpw
-echo -n "Enter database name: "
-read dbname
-echo -n "Enter database username: "
-read dbuser
-echo -n "Enter database user password: "
-read dbpw
  
 db="create database $dbname;GRANT ALL PRIVILEGES ON $dbname.* TO $dbuser@localhost IDENTIFIED BY '$dbpw';FLUSH PRIVILEGES;"
 mysql -u root -p$rootpw -e "$db"
