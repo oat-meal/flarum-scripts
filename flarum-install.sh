@@ -35,7 +35,7 @@ read -s rootpw
 echo -n "Flarum database username: "
 read dbuser
 echo -n "Database user password: "
-read dbpw
+read -s dbpw
 echo -n "Database name: "
 read dbname
 
